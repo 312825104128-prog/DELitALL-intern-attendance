@@ -1,23 +1,40 @@
-import fs from 'fs/promises';
-import path from 'path';
+import { admin } from './firebase-admin';
 
 export async function uploadFileToDrive(
   buffer: Buffer,
-  fileName: string
+  fileName: string,
+  mimeType: string = 'application/octet-stream'
 ): Promise<string> {
-  const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-  
-  // Ensure the uploads directory exists
-  await fs.mkdir(uploadsDir, { recursive: true });
+  if (!admin.apps.length) {
+    throw new Error('Firebase Admin SDK not initialized. Please check your environment variables.');
+  }
 
-  // To avoid file name collisions, we prepend a timestamp
+  const bucket = admin.storage().bucket();
+  
+  // Clean filename to avoid issues
   const safeName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
-  const finalName = `${Date.now()}-${safeName}`;
-  const filePath = path.join(uploadsDir, finalName);
+  const finalPath = `uploads/${Date.now()}-${safeName}`;
+  const file = bucket.file(finalPath);
   
-  // Write the file locally
-  await fs.writeFile(filePath, buffer);
+  // Upload to Firebase Storage
+  await file.save(buffer, {
+    metadata: {
+      contentType: mimeType,
+    },
+    resumable: false, // Better for serverless/Vercel functions
+  });
 
-  // Return the relative URL to access it from the browser
-  return `/uploads/${finalName}`;
+  try {
+    // Attempt to make public and use the standard public URL
+    await file.makePublic();
+    return `https://storage.googleapis.com/${bucket.name}/${finalPath}`;
+  } catch (err) {
+    // If bucket prevents public access, generate a long-lived signed URL
+    console.warn('Could not make file public, falling back to signed URL.', err);
+    const [signedUrl] = await file.getSignedUrl({
+      action: 'read',
+      expires: '01-01-2100', // Far future expiration
+    });
+    return signedUrl;
+  }
 }

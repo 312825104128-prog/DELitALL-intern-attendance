@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     }
 
     const buf = Buffer.from(await file.arrayBuffer());
-    const fileUrl = await uploadFileToDrive(buf, file.name);
+    const fileUrl = await uploadFileToDrive(buf, file.name, file.type);
     return NextResponse.json({ success: true, fileUrl, fileName: file.name });
   } catch (err) {
     console.error('POST /api/upload:', err);
