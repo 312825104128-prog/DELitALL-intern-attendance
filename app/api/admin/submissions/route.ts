@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSubmissionsByIntern, getAllSubmissions } from '@/lib/sheets';
+import { getSubmissionsByIntern, getAllSubmissions } from '@/lib/firestore';
 
 export const dynamic = 'force-dynamic';
 

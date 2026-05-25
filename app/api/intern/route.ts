@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getInternByUid } from '@/lib/sheets';
+import { getInternByUid } from '@/lib/firestore';
 
 export async function GET(req: NextRequest) {
   const uid = req.nextUrl.searchParams.get('uid');

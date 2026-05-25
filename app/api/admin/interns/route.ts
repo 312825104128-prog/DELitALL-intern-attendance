@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllInterns, saveIntern, deleteIntern } from '@/lib/sheets';
+import { getAllInterns, saveIntern, deleteIntern } from '@/lib/firestore';
 import type { Intern } from '@/types';
 
 export const dynamic = 'force-dynamic';

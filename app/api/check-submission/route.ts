@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkDuplicate } from '@/lib/sheets';
+import { checkDuplicate } from '@/lib/firestore';
 
 export async function GET(req: NextRequest) {
   const internId = req.nextUrl.searchParams.get('internId');

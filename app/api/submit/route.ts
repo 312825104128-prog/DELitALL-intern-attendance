@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { appendSubmission, checkDuplicate, getAllInterns, getSubmissionsByIntern } from '@/lib/sheets';
+import { appendSubmission, checkDuplicate, getAllInterns, getSubmissionsByIntern } from '@/lib/firestore';
 import type { Submission } from '@/types';
 
 export async function POST(req: NextRequest) {
